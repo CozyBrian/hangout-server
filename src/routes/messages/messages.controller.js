@@ -27,8 +27,9 @@ function postMessage(req, res) {
 function getMessages(req, res) {
   const request = req.body;
 
-  client.query(`SELECT * from messages WHERE 
-    outgoing_id='${request.outgoing_id}' and incoming_id='${request.incoming_id}'`, 
+  client.query(`
+    SELECT * FROM messages WHERE (outgoing_id='${request.outgoing_id}' and incoming_id='${request.incoming_id}') 
+    or (outgoing_id='${request.incoming_id}' and incoming_id='${request.outgoing_id}') ORDER BY timestamp`, 
     (err, result) => {
     if (err) {
       console.log(err);
