@@ -19,4 +19,4 @@ app.listen(3000, () => {
   console.log(`listening on port ${PORT}`);
 });
 
-//client.connect();
+client.connect();
