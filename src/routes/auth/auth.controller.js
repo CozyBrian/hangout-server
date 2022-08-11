@@ -81,6 +81,12 @@ async function postSignIn(req, res) {
     } 
     userFromDB = result.rows[0];
 
+    const data = {
+      user_id: userFromDB.user_id,
+      username: userFromDB.username,
+      email: userFromDB.email,
+    }
+
     const accessToken = _generateToken(data);
     const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
 
