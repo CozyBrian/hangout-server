@@ -11,6 +11,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use('/v1', api);
 
+app.get('/', (req, res) => {
+  res.send("Hello worldddd");
+});
+
 app.listen(3000, () => {
   console.log(`listening on port ${PORT}`);
 });
