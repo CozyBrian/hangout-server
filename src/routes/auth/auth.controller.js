@@ -38,7 +38,7 @@ async function postSignUP(req, res) {
       const accessToken = _generateToken(data);
       const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
 
-      client.query(`INSERT INTO "tokenStore"(refresh_token)
+      client.query(`INSERT INTO tokenstore(refresh_token)
         VALUES ('${refreshToken}')`, (err, result) => {
           if (err) {
             console.log(err);

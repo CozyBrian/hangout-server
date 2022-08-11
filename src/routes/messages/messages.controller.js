@@ -1,13 +1,15 @@
 const client = require('../../services/postgres');
+const nanoid = require('nanoid');
 
 function postMessage(req, res) {
   const message = req.body;
   // TODO - uuid for msg_id
+  const id = nanoid(10);
 
   client.query(`INSERT INTO messages(
 	msg_id, incoming_id, outgoing_id, msg, "timestamp")
 	VALUES (
-    '${message.msg_id}', 
+    '${id}', 
     '${message.incoming_id}', 
     '${message.outgoing_id}', 
     '${message.msg}', 
