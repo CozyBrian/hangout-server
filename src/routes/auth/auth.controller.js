@@ -81,9 +81,21 @@ async function postSignIn(req, res) {
     } 
     userFromDB = result.rows[0];
 
+    const accessToken = _generateToken(data);
+    const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
+
+    const response = {
+      accessToken: accessToken,
+      localId: userFromDB.user_id,
+      email: userFromDB.email,
+      created: true,
+      expiresIn: 'expiresIn',
+      refreshToken: refreshToken
+    }
+
     try {
       if (await bcrypt.compare(request.password, userFromDB.passkey)) {
-        res.status(200).send("SUCCESS");
+        res.status(200).send(response);
       } else {
         res.status(401).send("WRONG_PASSWORD");
       }
