@@ -41,9 +41,30 @@ function getMessages(req, res) {
     res.status(200).send(result.rows);
   });
 }
+function getMessagesList(req, res) {
+  const request = req.params;
+
+  client.query(`
+    SELECT  DISTINCT 
+    CASE WHEN outgoing_id = '${request.id}' 
+        THEN incoming_id 
+        ELSE outgoing_id 
+    END user_id
+    FROM    messages
+    WHERE   '${request.id}' IN (outgoing_id, incoming_id)`, 
+    (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.sendStatus(401);
+    }
+
+    res.status(200).send(result.rows);
+  });
+}
 
 
 module.exports = {
   postMessage,
-  getMessages
+  getMessages,
+  getMessagesList
 }
