@@ -147,6 +147,19 @@ async function postSignIn(req, res) {
   client.end;
 }
 
+function userLogOut(req, res) {
+  const refreshToken = req.body.token;
+
+  client.query(`DELETE * FROM "tokenStore" WHERE refresh_token='${refreshToken}`, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({
+        error: 'SERVER_ERROR'
+      });
+    }
+  });
+}
+
 function refreshUsertoken(req, res) {
   const refreshToken = req.body.token;
   if (refreshToken == null) return res.sendStatus(401);
@@ -180,5 +193,6 @@ function refreshUsertoken(req, res) {
 module.exports = {
   postSignIn,
   postSignUP,
-  refreshUsertoken
+  refreshUsertoken,
+  userLogOut
 }
