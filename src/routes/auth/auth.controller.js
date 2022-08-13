@@ -167,7 +167,7 @@ function refreshUsertoken(req, res) {
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET,(err, user) => {
       if (err) {
         //console.log(err);
-        return res.res.status(403).send({
+        return res.status(403).send({
           error: "TOKEN_EXPIRED"
         });
       }
