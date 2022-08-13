@@ -5,7 +5,9 @@ function getUserInfo(req, res) {
   client.query(`select * from users where user_id='${req.params.id}'`, (err, result)=> {
     if (err) {
       console.log(err);
-      return res.sendStatus(401);
+      return res.status(401).send({
+        error: 'SERVER_ERROR'
+      });
     }
 
     return res.send(result.rows);
@@ -18,7 +20,9 @@ function getAllUsers(req, res) {
   client.query(`select user_id, username from users`, (err, result)=> {
     if (err) {
       console.log(err);
-      return res.sendStatus(401);
+      return res.status(401).send({
+        error: 'SERVER_ERROR'
+      });
     }
 
     return res.send(result.rows);

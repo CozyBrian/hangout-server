@@ -17,7 +17,9 @@ function postMessage(req, res) {
 
     if (err) {
       console.log(err);
-      return res.sendStatus(401);
+      return res.status(401).send({
+        error: 'INVALID_PARAMETER'
+      });
     }
 
     res.status(200).send(message);
@@ -35,12 +37,37 @@ function getMessages(req, res) {
     (err, result) => {
     if (err) {
       console.log(err);
-      return res.sendStatus(401);
+      return res.status(401).send({
+        error: 'INVALID_PARAMETER'
+      });
     }
 
     res.status(200).send(result.rows);
   });
 }
+function getLastMessages(req, res) {
+  client.query(`
+  SELECT t1.*
+  FROM messages t1
+  JOIN ( SELECT LEAST(outgoing_id, incoming_id) user1,
+                GREATEST(outgoing_id, incoming_id) user2,
+                MAX(timestamp) timestamp 
+         FROM messages t2
+         GROUP BY user1, user2 ) t3  ON t1.outgoing_id IN (t3.user1, t3.user2)
+                                    AND t1.incoming_id IN (t3.user1, t3.user2)
+                                    AND t1.timestamp = t3.timestamp`, 
+    (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(401).send({
+        error: 'SERVER_ERROR'
+      });
+    }
+
+    res.status(200).send(result.rows);
+  });
+}
+
 function getMessagesList(req, res) {
   const request = req.params;
 
@@ -55,7 +82,9 @@ function getMessagesList(req, res) {
     (err, result) => {
     if (err) {
       console.log(err);
-      return res.sendStatus(401);
+      return res.status(401).send({
+        error: 'INVALID_PARAMETER'
+      });
     }
 
     res.status(200).send(result.rows);
@@ -66,5 +95,6 @@ function getMessagesList(req, res) {
 module.exports = {
   postMessage,
   getMessages,
-  getMessagesList
+  getMessagesList,
+  getLastMessages
 }
