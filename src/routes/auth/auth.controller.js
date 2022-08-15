@@ -4,30 +4,25 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const nanoid = require('nanoid');
 
+const TOKEN_EXPIRED = 120;
+
 function _generateToken(data) {
-  return jwt.sign(data, process.env.ACCESS_TOKEN_SECRET,{ expiresIn: "24h" });
+  return jwt.sign(data, process.env.ACCESS_TOKEN_SECRET,{ expiresIn: `${TOKEN_EXPIRED}h` });
 }
 
 async function postSignUP(req, res) {
   const user = req.body;
   
   try {
-    client.query(`SELECT email
-    FROM users WHERE email='${user.email}'`, (err, result) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).send({
-          error: 'SERVER_ERROR'
-        });
-      }
+    const queryRes = await client.query(`
+    SELECT email FROM users WHERE email='${user.email}'`);
 
-      if (result.rowCount > 0) {
-        return res.status(400).send({
-          error: "EMAIL_ALREADY_EXISTS"
-        });
-      }
-    });
-
+    if (queryRes.rowCount > 0) { 
+      return res.status(400).send({
+        error: "EMAIL_ALREADY_EXISTS"
+      });
+    }
+    
     const id = nanoid();
     const hashedPassword = await bcrypt.hash(user.password, 10);
 
@@ -57,9 +52,9 @@ async function postSignUP(req, res) {
       const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
 
       client.query(`INSERT INTO "tokenStore"(refresh_token)
-        VALUES ('${refreshToken}')`, (err, result) => {
-          if (err) {
-            console.log(err);
+        VALUES ('${refreshToken}')`, (err2, result) => {
+          if (err2) {
+            console.log(err2);
             return res.status(500).send({
               error: 'SERVER_ERROR'
             });
@@ -67,7 +62,7 @@ async function postSignUP(req, res) {
       });
 
       var date = new Date(); // your date object
-      date.setHours(date.getHours() + 24);
+      date.setHours(date.getHours() + TOKEN_EXPIRED);
 
       const response = {
         accessToken: accessToken,
@@ -119,7 +114,7 @@ async function postSignIn(req, res) {
     const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
 
     var date = new Date(); // your date object
-      date.setHours(date.getHours() + 24);
+      date.setHours(date.getHours() + TOKEN_EXPIRED);
 
     const response = {
       accessToken: accessToken,
@@ -179,7 +174,7 @@ function refreshUsertoken(req, res) {
     
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET,(err, user) => {
       if (err) {
-        //console.log(err);
+        console.log(err);
         return res.status(403).send({
           error: "TOKEN_EXPIRED"
         });
