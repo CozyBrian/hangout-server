@@ -1,4 +1,5 @@
 const express = require("express");
+const apicache = require("apicache");
 const { 
   getAllUsers, 
   getUserInfo, 
@@ -9,7 +10,9 @@ const {
 
 const usersRouter = express.Router();
 
-usersRouter.get('/', getAllUsers);
+const cache = apicache.middleware;
+
+usersRouter.get('/', cache("15 minutes"), getAllUsers);
 usersRouter.get('/:id', getUserInfo);
 usersRouter.post('/', postAUser);
 usersRouter.put('/:id', updateUserName);
