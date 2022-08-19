@@ -1,11 +1,13 @@
 const express = require("express");
 const apicache = require("apicache");
 const { 
-  getAllUsers, 
-  getUserInfo, 
+  getAllUsers,
+  getUserInfo,
   postAUser,
   updateUserName,
-  deleteUser 
+  deleteUser,
+  getFriends,
+  addFriend
 } = require("./users.controller");
 
 const usersRouter = express.Router();
@@ -17,5 +19,7 @@ usersRouter.get('/:id', getUserInfo);
 usersRouter.post('/', postAUser);
 usersRouter.put('/:id', updateUserName);
 usersRouter.delete('/:id', deleteUser);
+usersRouter.post('/friends/', getFriends);
+usersRouter.post('/friends/:id', addFriend);
 
 module.exports = usersRouter;

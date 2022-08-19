@@ -29,8 +29,52 @@ function getAllUsers(req, res) {
   });
 
   client.end;
-
 }
+
+function getFriends(req, res) {
+  const data = req.body;
+
+  client.query(`SELECT user_id, username
+	  FROM users WHERE user_id IN (
+    SELECT DISTINCT CASE WHEN following_id='${data.user_id}' 
+    THEN user_id
+    ELSE following_id
+    END user_id FROM friends WHERE
+    '${data.user_id}' IN (user_id , following_id)
+    )`, (err, result) => {
+
+    if (err) {
+      console.log(err);
+      return res.status(401).send({
+        error: 'SERVER_ERROR'
+      });
+    }
+
+    return res.send(result.rows);
+  });
+}
+
+function addFriend(req, res) {
+  const data = req.body;
+  const id = req.params.id
+
+  client.query(`INSERT INTO friends(user_id, following_id)
+    VALUES ('${data.user_id}', '${id}')`, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(401).send({
+        error: 'SERVER_ERROR'
+      });
+    }
+
+    return res.status(200).send({
+      message: "SUCCESS"
+    });
+  });
+
+  client.end;
+}
+
 function postAUser(req, res) {
 
   const user = req.body;
@@ -93,5 +137,7 @@ module.exports = {
   getUserInfo,
   postAUser,
   updateUserName,
-  deleteUser
+  deleteUser,
+  getFriends,
+  addFriend
 };

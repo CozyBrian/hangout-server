@@ -59,3 +59,18 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.users
     OWNER to postgres;
+
+CREATE TABLE IF NOT EXISTS public.friends
+(
+    user_id character varying COLLATE pg_catalog."default" NOT NULL,
+    following_id character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT friends_pkey PRIMARY KEY (user_id, following_id),
+    CONSTRAINT "FOLLOWINGID_FK" FOREIGN KEY (following_id)
+        REFERENCES public.users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "USERID_FK" FOREIGN KEY (user_id)
+        REFERENCES public.users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)

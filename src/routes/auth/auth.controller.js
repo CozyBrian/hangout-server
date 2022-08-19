@@ -14,6 +14,12 @@ async function postSignUP(req, res) {
   const user = req.body;
   
   try {
+    if (user.username == "" || user.password == "" || user.email == "") {
+      return res.status(400).send({
+        error: "EMPTY_REQUIRED_FIELD"
+      })
+    }
+
     const queryRes = await client.query(`
     SELECT email FROM users WHERE email='${user.email}'`);
 
@@ -22,6 +28,7 @@ async function postSignUP(req, res) {
         error: "EMAIL_ALREADY_EXISTS"
       });
     }
+
     
     const id = nanoid();
     const hashedPassword = await bcrypt.hash(user.password, 10);
