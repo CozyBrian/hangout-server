@@ -74,3 +74,13 @@ CREATE TABLE IF NOT EXISTS public.friends
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
+
+-- ALTER TABLE IF EXISTS public.users DROP COLUMN IF EXISTS about;
+
+ALTER TABLE IF EXISTS public.users
+    ADD COLUMN about character varying(255) COLLATE pg_catalog."default";
+
+-- ALTER TABLE IF EXISTS public.users DROP COLUMN IF EXISTS profile_image;
+
+ALTER TABLE IF EXISTS public.users
+    ADD COLUMN profile_image character varying COLLATE pg_catalog."default";
